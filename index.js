@@ -6,16 +6,17 @@ function handleRequest(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers', 'X-Requested-With');
 	var url;
+	var afterSlash = req.url.substring(1);
 
 	if (req.headers['x-forwarded-host']) {
 		url = 'http://' + req.headers['x-forwarded-host'] + req.url;
-	} else if (req.url.indexOf('/http://') === 0 || req.url.indexOf('/https://') === 0) {
-		url = req.url.substring(1);
-	} else if (req.url === undefined || req.url === '' || req.url === '/') {
+	} else if (afterSlash.indexOf('http://') === 0 || afterSlash.indexOf('https://') === 0) {
+		url = afterSlash;
+	} else if (afterSlash === '') {
 		res.sendFile(path.join(__dirname, 'README.md'));
 		return;
 	} else {
-		res.status(500).send('The url was not specified. See <a href="/">README</a>.');
+		res.status(500).send('Url: ' + afterSlash + '\n<br>The url was not specified or doen not start with http(s)://.<br>\nSee <a href="/">README</a>.');
 		return;
 	}
 
